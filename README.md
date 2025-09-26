@@ -1,6 +1,6 @@
 # ServeRest API - Documentação de Testes
 
-Este repositório contém a documentação de testes para a API ServeRestv realizadas na Sprint 8, com correções feitas na Sprint 11.
+Este repositório contém a documentação de testes para a API ServeRestv.
 
 ## Estrutura do Projeto
 
