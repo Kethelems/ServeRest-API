@@ -12,8 +12,7 @@ docs/
 │   └── mapeamento-issues/
 └── corrigido/          # Documentos corrigidos (após feedback)
     ├── plano-teste/
-    ├── relatorio-bugs/
-    └── mapeamento-issues/
+
 ```
 
 ## Conteúdo
