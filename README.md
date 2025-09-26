@@ -23,7 +23,7 @@ docs/
 - **Mapeamento de Issues**: Mapeamento de problemas e melhorias
 
 ### Documentos Corrigidos
-- Versões atualizadas dos documentos após análise e feedback
+- Versão atualizada do documento, plano de teste, após análise e feedback
 - Melhorias implementadas baseadas nas revisões
 
 ## Sobre o ServeRest
