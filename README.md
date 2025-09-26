@@ -25,6 +25,7 @@ docs/
 ### Documentos Corrigidos
 - Versão atualizada do documento, plano de teste, após análise e feedback
 - Melhorias implementadas baseadas nas revisões
+- Incluindo cobertura, cenários de teste, priorização, e novas abordagens voltadas para testes automatizados de APIs REST com Robot Framework.
 
 ## Sobre o ServeRest
 
