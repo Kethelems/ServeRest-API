@@ -8,7 +8,7 @@ Test Tags        login    api    smoke
 *** Test Cases ***
 TC026 - Login Com Credenciais Validas
     [Documentation]    Verifica se é possível fazer login com credenciais válidas
-    [Tags]    login    positivo    high
+    [Tags]    login    post    positivo    high    smoke    regression
     
     # Criar usuário para teste
     ${user_data}=    Generate Test Data
@@ -25,7 +25,7 @@ TC026 - Login Com Credenciais Validas
 
 TC027 - Validar Estrutura Do Token
     [Documentation]    Verifica se o token retornado possui estrutura JWT válida
-    [Tags]    login    token    estrutura    medium
+    [Tags]    login    post    positivo    medium    token    json    regression
     
     # Criar usuário para teste
     ${user_data}=    Generate Test Data
@@ -43,7 +43,7 @@ TC027 - Validar Estrutura Do Token
 
 TC028 - Validar Tempo Expiracao Token
     [Documentation]    Verifica se o token possui informações de expiração
-    [Tags]    login    token    expiracao    low
+    [Tags]    login    post    positivo    low    token    regression
     
     # Criar usuário para teste
     ${user_data}=    Generate Test Data
@@ -64,7 +64,7 @@ TC028 - Validar Tempo Expiracao Token
 
 TC029 - Login Com Usuario Administrador
     [Documentation]    Verifica se é possível fazer login com usuário administrador
-    [Tags]    login    admin    positivo    medium
+    [Tags]    login    post    positivo    high    admin    smoke
     
     # Criar usuário admin para teste
     ${user_data}=    Generate Test Data    admin_flag=${ADMIN_TRUE}
@@ -81,7 +81,7 @@ TC029 - Login Com Usuario Administrador
 
 TC030 - Login Com Email Inexistente
     [Documentation]    Verifica erro ao tentar login com email inexistente
-    [Tags]    login    negativo    error    medium
+    [Tags]    login    post    negativo    medium    error    regression
     
     ${login_data}=    Generate Login Data    email=inexistente@teste.com    password=senha123
     ${response}=      Fazer Login Via API    ${login_data}
@@ -89,7 +89,7 @@ TC030 - Login Com Email Inexistente
 
 TC031 - Login Com Senha Incorreta
     [Documentation]    Verifica erro ao tentar login com senha incorreta
-    [Tags]    login    negativo    error    medium
+    [Tags]    login    post    negativo    medium    error    regression
     
     # Criar usuário para teste
     ${user_data}=    Generate Test Data
@@ -106,7 +106,7 @@ TC031 - Login Com Senha Incorreta
 
 TC032 - Login Com Email Em Branco
     [Documentation]    Verifica erro ao tentar login com email em branco
-    [Tags]    login    validacao    negativo    medium
+    [Tags]    login    post    negativo    medium    validation    regression
     
     ${login_data}=    Generate Login Data    email=${EMPTY}    password=senha123
     ${response}=      Fazer Login Via API    ${login_data}
@@ -116,7 +116,7 @@ TC032 - Login Com Email Em Branco
 
 TC033 - Login Com Password Em Branco
     [Documentation]    Verifica erro ao tentar login com password em branco
-    [Tags]    login    validacao    negativo    medium
+    [Tags]    login    post    negativo    medium    validation    regression
     
     ${login_data}=    Generate Login Data    email=teste@teste.com    password=${EMPTY}
     ${response}=      Fazer Login Via API    ${login_data}

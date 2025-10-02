@@ -7,7 +7,7 @@ Test Tags        usuarios    api    smoke
 *** Test Cases ***
 TC001 - Criar Usuario Valido Com Todos Os Campos
     [Documentation]    Verifica se é possível criar um usuário válido com todos os campos obrigatórios
-    [Tags]    criacao    positivo    high
+    [Tags]    usuarios    post    positivo    high    smoke    regression
     
     ${user_data}=    Generate Test Data    admin_flag=${ADMIN_TRUE}
     ${response}=     Criar Usuario Via API    ${user_data}
@@ -18,7 +18,7 @@ TC001 - Criar Usuario Valido Com Todos Os Campos
 
 TC007 - Criar Usuario Administrador
     [Documentation]    Verifica se é possível criar um usuário com perfil administrador
-    [Tags]    criacao    admin    positivo    medium
+    [Tags]    usuarios    post    positivo    high    admin    smoke
     
     ${user_data}=    Generate Test Data    admin_flag=${ADMIN_TRUE}
     ${response}=     Criar Usuario Via API    ${user_data}
@@ -33,7 +33,7 @@ TC007 - Criar Usuario Administrador
 
 TC008 - Criar Usuario Nao Administrador
     [Documentation]    Verifica se é possível criar um usuário com perfil não-administrador
-    [Tags]    criacao    user    positivo    medium
+    [Tags]    usuarios    post    positivo    medium    user    regression
     
     ${user_data}=    Generate Test Data    admin_flag=${ADMIN_FALSE}
     ${response}=     Criar Usuario Via API    ${user_data}
@@ -48,7 +48,7 @@ TC008 - Criar Usuario Nao Administrador
 
 TC011 - Criar Usuario Com Email Ja Existente
     [Documentation]    Verifica se o sistema impede a criação de usuário com email já cadastrado
-    [Tags]    criacao    negativo    validacao    high
+    [Tags]    usuarios    post    negativo    high    validation    regression
     
     # Criar primeiro usuário
     ${user_data}=    Generate Test Data
@@ -64,7 +64,7 @@ TC011 - Criar Usuario Com Email Ja Existente
 
 TC002 - Listar Todos Os Usuarios
     [Documentation]    Verifica se é possível listar todos os usuários cadastrados
-    [Tags]    listagem    positivo    low
+    [Tags]    usuarios    get    positivo    medium    smoke    regression
     
     ${response}=    Listar Usuarios Via API
     Validate Response Status    ${response}    200
@@ -76,7 +76,7 @@ TC002 - Listar Todos Os Usuarios
 
 TC003 - Buscar Usuario Por ID
     [Documentation]    Verifica se é possível buscar um usuário específico pelo ID
-    [Tags]    busca    positivo    medium
+    [Tags]    usuarios    get    positivo    medium    regression
     
     ${user_data}=    Generate Test Data
     ${response}=     Criar Usuario Via API    ${user_data}
@@ -91,7 +91,7 @@ TC003 - Buscar Usuario Por ID
 
 TC004 - Atualizar Usuario Valido
     [Documentation]    Verifica se é possível atualizar dados de um usuário existente
-    [Tags]    atualizacao    positivo    medium
+    [Tags]    usuarios    put    positivo    medium    regression
     
     ${user_data}=    Generate Test Data
     ${response}=     Criar Usuario Via API    ${user_data}
@@ -106,7 +106,7 @@ TC004 - Atualizar Usuario Valido
 
 TC006 - Deletar Usuario Valido
     [Documentation]    Verifica se é possível deletar um usuário existente
-    [Tags]    delecao    positivo    medium
+    [Tags]    usuarios    delete    positivo    medium    regression
     
     ${user_data}=    Generate Test Data
     ${response}=     Criar Usuario Via API    ${user_data}
@@ -118,7 +118,7 @@ TC006 - Deletar Usuario Valido
 
 TC009 - Validar Campos Obrigatorios
     [Documentation]    Verifica se o sistema valida campos obrigatórios na criação de usuário
-    [Tags]    validacao    negativo    high
+    [Tags]    usuarios    post    negativo    high    validation    smoke
     
     ${empty_data}=    Create Dictionary
     ${response}=      Criar Usuario Via API    ${empty_data}
@@ -128,7 +128,7 @@ TC009 - Validar Campos Obrigatorios
 
 TC010 - Validar Estrutura JSON
     [Documentation]    Verifica se a resposta da API possui a estrutura JSON esperada
-    [Tags]    estrutura    positivo    low
+    [Tags]    usuarios    get    positivo    medium    json    regression
     
     ${user_data}=    Generate Test Data
     ${response}=     Criar Usuario Via API    ${user_data}
@@ -147,7 +147,7 @@ TC010 - Validar Estrutura JSON
 
 TC023 - Nome Com Caracteres Especiais
     [Documentation]    Verifica se é possível criar usuário com caracteres especiais no nome
-    [Tags]    validacao    caracteres    medium
+    [Tags]    usuarios    post    positivo    low    boundary    regression
     
     ${user_data}=    Generate Test Data    nome=João da Silva & Cia. Ltda.
     ${response}=     Criar Usuario Via API    ${user_data}
@@ -158,7 +158,7 @@ TC023 - Nome Com Caracteres Especiais
 
 TC024 - Nome Com Emojis
     [Documentation]    Verifica se é possível criar usuário com emojis no nome
-    [Tags]    validacao    emojis    low
+    [Tags]    usuarios    post    positivo    low    boundary    regression
     
     ${user_data}=    Generate Test Data    nome=Usuario 😀 Teste 🚀
     ${response}=     Criar Usuario Via API    ${user_data}
@@ -169,7 +169,7 @@ TC024 - Nome Com Emojis
 
 TC025 - Senha Limite Caracteres - BUG CONHECIDO
     [Documentation]    BUG: API aceita senhas < 5 e > 10 chars quando deveria rejeitar (TC015/TC016 do relatório)
-    [Tags]    validacao    senha    medium    bug_conhecido
+    [Tags]    usuarios    post    negativo    medium    boundary    bug_known    validation
     
     # BUG: Teste com 4 caracteres (deveria dar erro 400, mas aceita 201)
     ${user_data_bug1}=    Generate Test Data    password=1234
@@ -191,7 +191,7 @@ TC025 - Senha Limite Caracteres - BUG CONHECIDO
 
 TC014 - Email Dominio Invalido
     [Documentation]    Verifica validação de email com domínio inválido
-    [Tags]    validacao    email    negativo    medium
+    [Tags]    usuarios    post    negativo    medium    validation    regression
     
     ${user_data}=    Generate Test Data    email=usuario@dominio-invalido
     ${response}=     Criar Usuario Via API    ${user_data}
@@ -201,7 +201,7 @@ TC014 - Email Dominio Invalido
 
 TC020 - Buscar Usuario Inexistente
     [Documentation]    Verifica erro ao buscar usuário com ID inexistente
-    [Tags]    busca    negativo    error    medium
+    [Tags]    usuarios    get    negativo    medium    error    regression
     
     ${fake_id}=         Set Variable    507f1f77bcf86cd799439011
     ${response}=        Buscar Usuario Por ID Via API    ${fake_id}

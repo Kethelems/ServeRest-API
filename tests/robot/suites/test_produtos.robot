@@ -9,7 +9,7 @@ Test Tags        produtos    api    smoke
 *** Test Cases ***
 TC038 - Listar Produtos Sem Autenticacao
     [Documentation]    Verifica se é possível listar produtos sem autenticação
-    [Tags]    listagem    positivo    low
+    [Tags]    produtos    get    positivo    medium    smoke    regression
     
     ${response}=    Listar Produtos Via API
     Validate Response Status    ${response}    200
@@ -21,7 +21,7 @@ TC038 - Listar Produtos Sem Autenticacao
 
 TC039 - Criar Produto Com Token Valido
     [Documentation]    Verifica se é possível criar produto com token válido
-    [Tags]    criacao    positivo    high
+    [Tags]    produtos    post    positivo    high    token    admin    smoke
     
     # Criar usuário admin e obter token
     ${token}    ${user_id}=    Create Admin User And Get Token
@@ -37,7 +37,7 @@ TC039 - Criar Produto Com Token Valido
 
 TC040 - Listar Produtos Por Query Parameters
     [Documentation]    Verifica se é possível listar produtos usando query parameters
-    [Tags]    listagem    query    positivo    medium
+    [Tags]    produtos    get    positivo    medium    regression
     
     ${response}=    Listar Produtos Via API
     Validate Response Status    ${response}    200
@@ -45,7 +45,7 @@ TC040 - Listar Produtos Por Query Parameters
 
 TC041 - Buscar Produto Por ID Valido
     [Documentation]    Verifica se é possível buscar produto por ID válido
-    [Tags]    busca    positivo    medium
+    [Tags]    produtos    get    positivo    medium    regression
     
     # Criar usuário admin e obter token
     ${token}    ${user_id}=    Create Admin User And Get Token
@@ -66,7 +66,7 @@ TC041 - Buscar Produto Por ID Valido
 
 TC042 - Atualizar Produto Existente
     [Documentation]    Verifica se é possível atualizar produto existente
-    [Tags]    atualizacao    positivo    medium
+    [Tags]    produtos    put    positivo    medium    token    admin    regression
     
     # Criar usuário admin e obter token
     ${token}    ${user_id}=    Create Admin User And Get Token
@@ -87,7 +87,7 @@ TC042 - Atualizar Produto Existente
 
 TC043 - Criar Produto Via PUT Com ID Inexistente
     [Documentation]    Verifica se é possível criar produto via PUT com ID inexistente
-    [Tags]    criacao    put    positivo    medium
+    [Tags]    produtos    put    negativo    medium    error    token    admin    regression
     
     # Criar usuário admin e obter token
     ${token}    ${user_id}=    Create Admin User And Get Token
@@ -103,7 +103,7 @@ TC043 - Criar Produto Via PUT Com ID Inexistente
 
 TC044 - Deletar Produto Sem Dependencias
     [Documentation]    Verifica se é possível deletar produto sem dependências
-    [Tags]    delecao    positivo    medium
+    [Tags]    produtos    delete    positivo    medium    token    admin    regression
     
     # Criar usuário admin e obter token
     ${token}    ${user_id}=    Create Admin User And Get Token
@@ -123,7 +123,7 @@ TC044 - Deletar Produto Sem Dependencias
 
 TC045 - Validar Estrutura Resposta Produto
     [Documentation]    Verifica se a resposta possui estrutura JSON esperada para produto
-    [Tags]    estrutura    positivo    low
+    [Tags]    produtos    get    positivo    medium    json    regression
     
     # Criar usuário admin e obter token
     ${token}    ${user_id}=    Create Admin User And Get Token
@@ -149,7 +149,7 @@ TC045 - Validar Estrutura Resposta Produto
 
 TC046 - Criar Produto Sem Token
     [Documentation]    Verifica erro ao tentar criar produto sem token
-    [Tags]    criacao    negativo    error    high
+    [Tags]    produtos    post    negativo    high    error    token    smoke
     
     ${produto_data}=    Generate Produto Data
     ${response}=        Criar Produto Via API    ${produto_data}
@@ -157,7 +157,7 @@ TC046 - Criar Produto Sem Token
 
 TC049 - Criar Produto Com Nome Duplicado
     [Documentation]    Verifica erro ao tentar criar produto com nome duplicado
-    [Tags]    criacao    negativo    validacao    medium
+    [Tags]    produtos    post    negativo    medium    validation    token    admin    regression
     
     # Criar usuário admin e obter token
     ${token}    ${user_id}=    Create Admin User And Get Token

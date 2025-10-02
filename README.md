@@ -52,13 +52,28 @@ robot --outputdir results tests/robot/suites/test_carrinhos.robot
 ### Executar por tags:
 ```bash
 # Apenas testes críticos
-robot --include high --outputdir results tests/robot/
+robot --include high --outputdir results tests/robot/suites/
+
+# Apenas testes de smoke
+robot --include smoke --outputdir results tests/robot/suites/
 
 # Apenas testes positivos
-robot --include positivo --outputdir results tests/robot/
+robot --include positivo --outputdir results tests/robot/suites/
+
+# Apenas métodos POST
+robot --include post --outputdir results tests/robot/suites/
+
+# Apenas testes de admin
+robot --include admin --outputdir results tests/robot/suites/
 
 # Excluir bugs conhecidos
-robot --exclude bug_conhecido --outputdir results tests/robot/
+robot --exclude bug_known --outputdir results tests/robot/suites/
+
+# Combinar tags (smoke E positivo)
+robot --include smokeANDpositivo --outputdir results tests/robot/suites/
+
+# Testes de validação
+robot --include validation --outputdir results tests/robot/suites/
 ```
 
 ## 📊 Relatórios
@@ -211,10 +226,26 @@ robot --outputdir results tests/robot/suites/
 ## 📝 Estratégia de Testes
 
 - **Testes de Regressão:** Cenários estáveis para execução contínua
-- **Documentação de Bugs:** Cenários com bugs conhecidos marcados com tag `bug_conhecido`
+- **Documentação de Bugs:** Cenários com bugs conhecidos marcados com tag `bug_known`
 - **Cobertura Funcional:** Testes positivos e negativos
 - **Validações:** Status codes, estrutura JSON, mensagens de erro
 - **Cleanup:** Limpeza automática de dados criados nos testes
+
+### 🏷️ Padrão de Tags
+
+**Recurso:** `usuarios`, `login`, `produtos`, `carrinhos`
+
+**Método HTTP:** `post`, `get`, `put`, `delete`
+
+**Resultado:** `positivo`, `negativo`, `error`
+
+**Validação:** `validation`, `json`, `token`, `boundary`
+
+**Criticidade:** `high`, `medium`, `low`
+
+**Escopo:** `smoke`, `regression`, `admin`, `user`
+
+**Outros:** `bug_known`, `security`, `performance`
 
 ## 🤝 Contribuição
 

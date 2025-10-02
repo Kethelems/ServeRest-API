@@ -10,7 +10,7 @@ Test Tags        carrinhos    api    smoke
 *** Test Cases ***
 TC058 - Listar Carrinhos Cadastrados
     [Documentation]    Verifica se é possível listar carrinhos cadastrados
-    [Tags]    listagem    positivo    low
+    [Tags]    carrinhos    get    positivo    medium    smoke    regression
     
     ${response}=    Listar Carrinhos Via API
     Validate Response Status    ${response}    200
@@ -22,7 +22,7 @@ TC058 - Listar Carrinhos Cadastrados
 
 TC059 - Criar Carrinho Com Produtos Validos
     [Documentation]    Verifica se é possível criar carrinho com produtos válidos
-    [Tags]    criacao    positivo    high
+    [Tags]    carrinhos    post    positivo    high    token    user    smoke
     
     # Criar usuário, produto e obter token
     ${token}    ${user_id}    ${produto_id}=    Create User Product And Token
@@ -41,7 +41,7 @@ TC059 - Criar Carrinho Com Produtos Validos
 
 TC060 - Buscar Carrinho Por ID
     [Documentation]    Verifica se é possível buscar carrinho por ID
-    [Tags]    busca    positivo    medium
+    [Tags]    carrinhos    get    positivo    medium    regression
     
     # Criar usuário, produto e obter token
     ${token}    ${user_id}    ${produto_id}=    Create User Product And Token
@@ -65,7 +65,7 @@ TC060 - Buscar Carrinho Por ID
 
 TC061 - Excluir Carrinho
     [Documentation]    Verifica se é possível excluir carrinho
-    [Tags]    exclusao    positivo    medium
+    [Tags]    carrinhos    delete    positivo    medium    token    user    regression
     
     # Criar usuário, produto e obter token
     ${token}    ${user_id}    ${produto_id}=    Create User Product And Token
@@ -88,7 +88,7 @@ TC061 - Excluir Carrinho
 
 TC062 - Excluir Carrinho E Retornar Produtos Ao Estoque
     [Documentation]    Verifica se produtos retornam ao estoque ao cancelar compra
-    [Tags]    exclusao    estoque    positivo    medium
+    [Tags]    carrinhos    delete    positivo    medium    token    user    regression
     
     # Criar usuário, produto e obter token
     ${token}    ${user_id}    ${produto_id}=    Create User Product And Token
@@ -115,7 +115,7 @@ TC062 - Excluir Carrinho E Retornar Produtos Ao Estoque
 
 TC076 - Concluir Compra
     [Documentation]    Verifica se é possível concluir compra
-    [Tags]    compra    positivo    high
+    [Tags]    carrinhos    delete    positivo    high    token    user    smoke
     
     # Criar usuário, produto e obter token
     ${token}    ${user_id}    ${produto_id}=    Create User Product And Token
@@ -138,7 +138,7 @@ TC076 - Concluir Compra
 
 TC077 - Cancelar Compra
     [Documentation]    Verifica se é possível cancelar compra
-    [Tags]    compra    cancelar    positivo    medium
+    [Tags]    carrinhos    delete    positivo    medium    token    user    regression
     
     # Criar usuário, produto e obter token
     ${token}    ${user_id}    ${produto_id}=    Create User Product And Token
