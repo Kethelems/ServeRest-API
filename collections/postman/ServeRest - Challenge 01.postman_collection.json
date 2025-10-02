@@ -1,0 +1,3797 @@
+{
+	"info": {
+		"_postman_id": "ce9b7bdd-047d-446d-ad9a-befb3bf619b4",
+		"name": "ServeRest - Challenge 01",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "47898461",
+		"_collection_link": "https://kethelem-socoowski-s-team.postman.co/workspace/Primeira-API~e65e1498-2d1a-4796-b526-19fec3333a46/collection/47898461-ce9b7bdd-047d-446d-ad9a-befb3bf619b4?action=share&source=collection_link&creator=47898461"
+	},
+	"item": [
+		{
+			"name": "Usuários",
+			"item": [
+				{
+					"name": "Criar usuários",
+					"item": [
+						{
+							"name": "TC001 - Criar usuário válido com todos os campos",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const json = pm.response.json();",
+											"",
+											"pm.test(\"Status code é 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"",
+											"pm.test(\"JSON válido\", function () {",
+											"    pm.response.to.have.jsonBody();",
+											"});",
+											"",
+											"pm.test(\"Tem _id\", function () {",
+											"    pm.expect(json._id).to.exist;",
+											"",
+											"    pm.collectionVariables.set(\"userId\", json._id);",
+											"",
+											"    pm.environment.set(\"user_id\", json._id);",
+											"});",
+											"",
+											"pm.test(\"Mensagem de sucesso\", function () {",
+											"    pm.expect(json.message).to.eql(\"Cadastro realizado com sucesso\");",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const ts = Date.now();",
+											"const email = `qa+${ts}@example.com`;",
+											"",
+											"pm.environment.set(\"new_email\", email);",
+											"pm.environment.set(\"new_password\", \"abcde\");",
+											"",
+											"pm.collectionVariables.set(\"new_email\", email);",
+											"pm.collectionVariables.set(\"new_password\", \"abcde\");",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nome\": \"Teste User\",\n  \"email\": \"{{new_email}}\",\n  \"password\": \"{{new_password}}\",\n  \"administrador\": \"true\"\n}\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC005 - Criar usuário com ID Inexistente",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nome\": \"PUT Novo 1756747475476\",\n  \"email\": \"qa-put-1756747475476@example.com\",\n  \"password\": \"abcde\",\n  \"administrador\": \"true\"\n}"
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios/{{user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios",
+										"{{user_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC007 - Criar um usuário administrador",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const ts = Date.now();\r",
+											"pm.variables.set(\"new_admin_email\", `admin+${ts}@example.com`);\r",
+											"pm.variables.set(\"new_admin_password\", \"abcde\"); \r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"if (pm.response.headers.get(\"Content-Type\").includes(\"application/json\")) {\r",
+											"    const json = pm.response.json();\r",
+											"\r",
+											"    pm.test(\"Tem _id\", function () {\r",
+											"        pm.expect(json._id).to.exist;\r",
+											"        pm.environment.set(\"admin_user_id\", json._id);\r",
+											"    });\r",
+											"\r",
+											"    // Salva email e senha do admin para login futuro\r",
+											"    pm.environment.set(\"admin_email\", pm.variables.get(\"new_admin_email\"));\r",
+											"    pm.environment.set(\"admin_password\", pm.variables.get(\"new_admin_password\"));\r",
+											"\r",
+											"    pm.test(\"Mensagem de sucesso\", function () {\r",
+											"        pm.expect(json.message).to.eql(\"Cadastro realizado com sucesso\");\r",
+											"    });\r",
+											"} else {\r",
+											"    console.log(\"Resposta não é JSON:\", pm.response.text());\r",
+											"}\r",
+											"\r",
+											"pm.test(\"Tempo de resposta aceitável\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Admin User\",\r\n  \"email\": \"{{new_admin_email}}\",\r\n  \"password\": \"{{new_admin_password}}\",\r\n  \"administrador\": \"true\"\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC008 – Criar usuário não-administrador",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const ts = Date.now();\r",
+											"pm.variables.set(\"new_user_email\", `user+${ts}@example.com`);\r",
+											"pm.variables.set(\"new_user_password\", \"abcde\"); \r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"if (pm.response.headers.get(\"Content-Type\").includes(\"application/json\")) {\r",
+											"    const json = pm.response.json();\r",
+											"\r",
+											"    pm.test(\"Tem _id\", function () {\r",
+											"        pm.expect(json._id).to.exist;\r",
+											"\r",
+											"        pm.environment.set(\"regular_user_id\", json._id);\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"Mensagem de sucesso\", function () {\r",
+											"        pm.expect(json.message).to.eql(\"Cadastro realizado com sucesso\");\r",
+											"    });\r",
+											"} else {\r",
+											"    console.log(\"Resposta não é JSON:\", pm.response.text());\r",
+											"}\r",
+											"\r",
+											"pm.test(\"Tempo de resposta aceitável\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Regular User\",\r\n  \"email\": \"{{new_user_email}}\",\r\n  \"password\": \"{{new_user_password}}\",\r\n  \"administrador\": \"false\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC011 – Criar usuário com email duplicado",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"if (pm.response.headers.get(\"Content-Type\")?.includes(\"application/json\")) {\r",
+											"    const json = pm.response.json();\r",
+											"    pm.test(\"Mensagem de erro presente\", function () {\r",
+											"        pm.expect(json.message).to.eql(\"Este email já está sendo usado\");\r",
+											"    });\r",
+											"} else {\r",
+											"    console.log(\"Resposta não é JSON:\", pm.response.text());\r",
+											"}\r",
+											"\r",
+											"pm.test(\"Tempo de resposta aceitável\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Teste Duplicado\",\r\n  \"email\": \"qa+1756833657583@example.com\",\r\n  \"password\": \"abcde\",\r\n  \"administrador\": \"true\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC012 – Criar usuário com email Gmail",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Teste Gmail\",\r\n  \"email\": \"testegmail+{{ts}}@gmail.com\",\r\n  \"password\": \"abcde\",\r\n  \"administrador\": \"true\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC013 – Criar usuário com email Hotmail",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Teste Gmail\",\r\n  \"email\": \"testegmail+{{ts}}@hotmail.com\",\r\n  \"password\": \"abcde\",\r\n  \"administrador\": \"true\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "C014 – Criar usuário com email inválido",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Teste Email Inválido\",\r\n  \"email\": \"emailinvalido\",\r\n  \"password\": \"abcde\",\r\n  \"administrador\": \"true\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC015: Criar usuário com senha < 5 caracteres",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400 ou 422\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([400, 422]);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de erro informa senha inválida\", function () {\r",
+											"    let jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.message).to.include(\"senha\").or.to.include(\"password\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta < 2s\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Teste Senha Curta\",\r\n  \"email\": \"senha+teste015@example.com\",\r\n  \"password\": \"1234\",\r\n  \"administrador\": \"true\"\r\n}\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC016: Criar usuário com senha > 10 caracteres",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400 ou 422\", function () {\r",
+											"    pm.expect(pm.response.code).to.be.oneOf([400, 422]);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de erro informa senha inválida\", function () {\r",
+											"    let jsonData = pm.response.json();\r",
+											"    pm.expect(jsonData.message).to.include(\"senha\").or.to.include(\"password\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta < 2s\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Teste Senha Longa\",\r\n  \"email\": \"teste_senha_long@serverest.dev\",\r\n  \"password\": \"12345678901\",\r\n  \"administrador\": \"true\"\r\n}\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC017: Criar usuário sem campo nome",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"const json = pm.response.json();\r",
+											"pm.test(\"Mensagem de erro presente\", function () {\r",
+											"    pm.expect(json.nome).to.eql(\"nome é obrigatório\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta aceitável\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"testeSemNome@example.com\",\r\n  \"password\": \"abcde\",\r\n  \"administrador\": \"true\"\r\n}\r\n\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC018: Criar usuário sem campo email",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"const json = pm.response.json();\r",
+											"pm.test(\"Mensagem de erro presente\", function () {\r",
+											"    pm.expect(json.email).to.eql(\"email é obrigatório\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta aceitável\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Teste Sem Email\",\r\n  \"password\": \"abcde\",\r\n  \"administrador\": \"true\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC019: Criar usuário sem campo password",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"const json = pm.response.json();\r",
+											"pm.test(\"Mensagem de erro presente\", function () {\r",
+											"    pm.expect(json.password).to.eql(\"password é obrigatório\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta aceitável\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Teste Sem Password\",\r\n  \"email\": \"teste_sem_password@example.com\",\r\n  \"administrador\": \"true\"\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "TC001 – Criar usuário válido com todos os campos  \nObjetivo: Validar que novos usuários sejam cadastrados com sucesso.  \nStatus code esperado: 201  \nMensagem de sucesso esperada: \"Cadastro realizado com sucesso\"  \nCorpo: JSON válido contendo _id e message  \nTempo de resposta: < 2s\n\n---\n\nTC005 – Criar usuário via PUT com ID inexistente  \nObjetivo: Validar o comportamento da API ao tentar criar/atualizar um usuário com um ID inexistente.  \nStatus code esperado: 400 ou 404 (dependendo da implementação)  \nMensagem de erro esperada: \"Nenhum registro alterado\" (ou mensagem equivalente)  \nCorpo: JSON válido  \nTempo de resposta: < 2s\n\n---\n\nTC007 – Criar usuário administrador  \nObjetivo: Validar que a API permita criar um usuário com permissão de administrador.  \nStatus code esperado: 201  \nMensagem de sucesso esperada: \"Cadastro realizado com sucesso\"  \nCorpo: JSON válido contendo _id  \nTempo de resposta: < 2s\n\n---\n\nTC008 – Criar usuário não administrador  \nObjetivo: Validar que a API permita criar um usuário com permissão normal (não administrador).  \nStatus code esperado: 201  \nMensagem de sucesso esperada: \"Cadastro realizado com sucesso\"  \nCorpo: JSON válido contendo _id  \nTempo de resposta: < 2s\n\n---\n\nTC011 – Criar usuário com email duplicado  \nObjetivo: Validar que a API não permita criar um usuário com email já existente.  \nStatus code esperado: 400 ou 409 (dependendo da implementação)  \nMensagem de erro esperada: \"Este email já está sendo usado\"  \nCorpo: JSON válido  \nTempo de resposta: < 2s\n\n---\n\nTC012 – Criar usuário com email Gmail  \nObjetivo: Validar que a API não permita cadastro de usuários com email do domínio Gmail.  \nStatus code esperado: 400  \nMensagem de erro esperada: Mensagem no corpo indicando email inválido  \nCorpo: JSON válido  \nTempo de resposta: < 2s\n\n---\n\nTC013 – Criar usuário com email Hotmail  \nObjetivo: Validar que a API não permita cadastro de usuários com email do domínio Hotmail.  \nStatus code esperado: 400 ou 422 (dependendo da implementação)  \nMensagem de erro esperada: \"Domínio de email não permitido\" (ou mensagem equivalente)  \nCorpo: JSON válido  \nTempo de resposta: < 2s\n\n---\n\nTC014 – Criar usuário com email inválido  \nObjetivo: Validar que a API não permita cadastro de usuários com email em formato inválido.  \nStatus code esperado: 400 ou 422 (dependendo da implementação)  \nMensagem de erro esperada: \"Este email é inválido para cadastro\" (ou mensagem equivalente)  \nCorpo: JSON válido  \nTempo de resposta: < 2s\n\n---\n\nTC015 – Criar usuário com senha menor que 5 caracteres  \nObjetivo: Validar que a API não permita cadastro de usuários com senha menor que 5 caracteres.  \nStatus code esperado: 400 ou 422 (dependendo da implementação)  \nMensagem de erro esperada: \"password deve ter no mínimo 5 caracteres\" (ou mensagem equivalente)  \nCorpo: JSON válido  \nTempo de resposta: < 2s\n\n---\n\nTC016 – Criar usuário com senha maior que 10 caracteres  \nObjetivo: Validar que a API não permita cadastro de usuários com senha maior que 10 caracteres.  \nStatus code esperado: 400 ou 422 (dependendo da implementação)  \nMensagem de erro esperada: \"password deve ter no máximo 10 caracteres\" (ou mensagem equivalente)  \nCorpo: JSON válido  \nTempo de resposta: < 2s\n\n---\n\nTC017 – Criar usuário sem campo nome  \nObjetivo: Validar que a API não permita cadastro de usuários sem o campo nome.  \nStatus code esperado: 400 ou 422 (dependendo da implementação)  \nMensagem de erro esperada: \"nome é obrigatório\" (ou mensagem equivalente)  \nCorpo: JSON válido  \nTempo de resposta: < 2s\n\n---\n\nTC018 – Criar usuário sem campo email  \nObjetivo: Validar que a API não permita cadastro de usuários sem o campo email.  \nStatus code esperado: 400 ou 422 (dependendo da implementação)  \nMensagem de erro esperada: \"email é obrigatório\" (ou mensagem equivalente)  \nCorpo: JSON válido  \nTempo de resposta: < 2s\n\n---\n\nTC019 – Criar usuário sem campo password  \nObjetivo: Validar que a API não permita cadastro de usuários sem o campo password.  \nStatus code esperado: 400 ou 422 (dependendo da implementação)  \nMensagem de erro esperada: \"password é obrigatório\" (ou mensagem equivalente)  \nCorpo: JSON válido  \nTempo de resposta: < 2s"
+				},
+				{
+					"name": "Listar todos os usuários",
+					"item": [
+						{
+							"name": "TC002- Listar todos os usuários",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"const json = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Retorna array de usuários\", function () {\r",
+											"    pm.expect(json).to.be.an(\"array\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Usuário criado presente na lista\", function () {\r",
+											"    const userId = pm.collectionVariables.get(\"userId\");\r",
+											"    const found = json.some(u => u._id === userId);\r",
+											"    pm.expect(found).to.be.true;\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "TC002 – Listar todos os usuários no recurso /usuarios  \nObjetivo: Garantir que todos os usuários cadastrados sejam retornados corretamente.  \nStatus code esperado: 200  \nMensagem esperada: N/A (deve apenas retornar a lista)  \nCorpo: JSON válido contendo um array de usuários, incluindo o _id do usuário criado no TC001  \nTempo de resposta: < 500ms"
+				},
+				{
+					"name": "Buscar usuários",
+					"item": [
+						{
+							"name": "TC003 -Buscar Usuário por ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"const json = pm.response.json();\r",
+											"\r",
+											"pm.test(\"ID do usuário confere\", function () {\r",
+											"    const userId = pm.collectionVariables.get(\"userId\");\r",
+											"    pm.expect(json._id).to.eql(userId);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Campos obrigatórios presentes\", function () {\r",
+											"    pm.expect(json.nome).to.exist;\r",
+											"    pm.expect(json.email).to.exist;\r",
+											"    pm.expect(json.administrador).to.exist;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta aceitável\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+											"});\r",
+											"pm.collectionVariables.set(\"userId\", json._id);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/usuarios/{{user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios",
+										"{{user_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC020: Buscar usuário com ID inexistente",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios/{{fake_user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios",
+										"{{fake_user_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "TC003 – Buscar usuário por ID válido  \nObjetivo: Garantir que seja possível obter os detalhes de um usuário existente.  \nStatus code esperado: 200  \nMensagem esperada: N/A (resposta deve conter os dados do usuário)  \nCorpo: JSON válido contendo os campos _id, nome, email e administrador, com _id correspondente ao usuário criado no TC001  \nTempo de resposta: < 1000ms\n\n---\n\nTC020 – Buscar usuário com ID inexistente  \nObjetivo: Validar que a API não permita buscar um usuário que não existe, conforme regra de negócio da US001.  \nStatus code esperado: 400 ou 404 (dependendo da implementação)  \nMensagem de erro esperada: \"Nenhum registro encontrado\" (ou mensagem equivalente retornada pela API)  \nCorpo: JSON válido  \nTempo de resposta: < 2s"
+				},
+				{
+					"name": "Atualizar usuários",
+					"item": [
+						{
+							"name": "TC004 - Atualizar usuário existente",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const ts = Date.now();\r",
+											"const email = `qa+${ts}@example.com`;\r",
+											"pm.variables.set(\"new_email\", email);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const json = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Status code é 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de atualização\", function () {\r",
+											"    pm.expect(json.message).to.eql(\"Registro alterado com sucesso\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Nome atualizado\", function () {\r",
+											"    pm.expect(json.nome).to.eql(\"Teste User Atualizado\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Email atualizado\", function () {\r",
+											"    pm.expect(json.email).to.eql(pm.variables.get(\"new_email\"));\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta aceitável\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(1000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nome\": \"Teste User Atualizado\",\r\n    \"email\": \"qa+{{timestamp}}@example.com\",\r\n    \"password\": \"abcde\",\r\n    \"administrador\": \"true\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios/{{user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios",
+										"{{user_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC021: Atualizar usuário com email já usado (PUT)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Usuário Teste\",\r\n  \"email\": \"email_ja_cadastrado@example.com\",\r\n  \"password\": \"abcde\",\r\n  \"administrador\": \"true\"\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios/{{user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios",
+										"{{user_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "TC004 – Atualizar usuário existente via PUT  \nObjetivo: Atualizar os dados de um usuário já existente.  \nStatus code esperado: 200  \nMensagem esperada: \"Registro alterado com sucesso\"  \nCorpo: JSON válido com os campos nome e email atualizados  \nTempo de resposta: < 1000ms\n\n---\n\nTC021 – Atualizar usuário com email já usado (PUT)  \nObjetivo: Validar que a API não permita atualizar um usuário utilizando um email que já está cadastrado para outro usuário.  \nStatus code esperado: 400 ou 422 (dependendo da implementação)  \nMensagem de erro esperada: \"Este email já está sendo usado\" (ou mensagem equivalente retornada pela API)  \nCorpo: JSON válido  \nTempo de resposta: < 2s"
+				},
+				{
+					"name": "Deletar usuários",
+					"item": [
+						{
+							"name": "TC006 - Deletar usuário existente",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"if (pm.response.headers.get(\"Content-Type\").includes(\"application/json\")) {",
+											"    const json = pm.response.json();",
+											"    pm.test(\"Mensagem de sucesso\", function () {",
+											"        pm.expect(json.message).to.eql(\"Registro excluído com sucesso\");",
+											"    });",
+											"} else {",
+											"    console.log(\"Resposta não é JSON:\", pm.response.text());",
+											"}",
+											"",
+											"pm.test(\"Tempo de resposta aceitável\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(1500);",
+											"});",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios/{{user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios",
+										"{{user_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC022: Deletar usuário inexistente",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios/{{fake_user_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios",
+										"{{fake_user_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "TC006 – Atualizar usuário existente  \nObjetivo: Validar que a API permite atualizar os dados de um usuário já existente.  \nStatus code esperado: 200  \nMensagem esperada: \"Registro alterado com sucesso\"  \nCorpo: JSON válido contendo o mesmo _id do usuário criado no TC001  \nTempo de resposta: < 2s\n\n---\n\nTC022 – Deletar usuário inexistente  \nObjetivo: Validar que a API não permita deletar um usuário que não existe, conforme regra de negócio da US001.  \nStatus code esperado: 400 ou 404 (dependendo da implementação)  \nMensagem de erro esperada: \"Nenhum registro excluído\" (ou mensagem equivalente retornada pela API)  \nCorpo: JSON válido  \nTempo de resposta: < 2s"
+				},
+				{
+					"name": "Validar",
+					"item": [
+						{
+							"name": "TC009 - Validar campos obrigatórios presentes",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const ts = Date.now();\r",
+											"pm.variables.set(\"new_email\", `missingfield+${ts}@example.com`);\r",
+											"pm.variables.set(\"new_password\", \"abcde\");\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"console.log(\"Resposta da API:\", pm.response.json());\r",
+											"\r",
+											"pm.test(\"Mensagem de erro presente\", function () {\r",
+											"    const json = pm.response.json();\r",
+											"\r",
+											"    pm.expect(Object.keys(json).length).to.be.above(0);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta aceitável\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"{{new_email}}\",\r\n  \"password\": \"{{new_password}}\",\r\n  \"administrador\": \"true\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC010 - Validar estrutura de resposta JSON",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const ts = Date.now();\r",
+											"pm.variables.set(\"new_email\", `structure+${ts}@example.com`);\r",
+											"pm.variables.set(\"new_password\", \"abcde\");\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"const json = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Tem _id\", function () {\r",
+											"    pm.expect(json._id).to.exist;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de sucesso\", function () {\r",
+											"    pm.expect(json.message).to.eql(\"Cadastro realizado com sucesso\");\r",
+											"});\r",
+											"\r",
+											"pm.environment.set(\"structure_user_id\", json._id);\r",
+											"\r",
+											"pm.test(\"Tempo de resposta aceitável\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Teste Estrutura\",\r\n  \"email\": \"{{new_email}}\",\r\n  \"password\": \"{{new_password}}\",\r\n  \"administrador\": \"true\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC023 – Enviar requisição com JSON malformado",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Teste ContentType\",\r\n  \"email\": \"teste+contenttype@example.com\",\r\n  \"password\": \"abcde\",\r\n  \"administrador\": \"true\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC025 – Validar códigos de erro HTTP",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code válido\", function () {\r",
+											"    pm.expect([400, 401, 404, 415]).to.include(pm.response.code);\r",
+											"});\r",
+											"\r",
+											"if (pm.response.headers.get(\"Content-Type\")?.includes(\"application/json\")) {\r",
+											"    const json = pm.response.json();\r",
+											"    pm.test(\"Mensagem de erro presente\", function () {\r",
+											"        pm.expect(Object.keys(json).length).to.be.above(0);\r",
+											"    });\r",
+											"} else {\r",
+											"    console.log(\"Resposta não é JSON:\", pm.response.text());\r",
+											"}\r",
+											"\r",
+											"pm.test(\"Tempo de resposta aceitável\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Teste Duplicado\",\r\n  \"email\": \"qa+<email_existente>@example.com\",\r\n  \"password\": \"abcde\",\r\n  \"administrador\": \"true\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC024: Enviar requisição com Content-Type incorreto",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "text/plain",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{ \"nome\": \"Usuário\", \"email\": \"usuario@exemplo.com\", \"password\": \"12345\", \"administrador\": \"true\" }\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/usuarios",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"usuarios"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "TC009 - Validar campos obrigatórios presentes\n\nObjetivo: Garantir que a API retorna erro caso algum campo obrigatório do usuário (nome, email, password, administrador) esteja ausente.\n\n- Status code esperado: 400\n    \n- Mensagem de erro esperada: \"Nome, email, password e administrador são obrigatórios\" (ou a mensagem que a API retornar)\n    \n- Corpo: JSON válido\n    \n- Tempo de resposta: < 2s\n    \n\n---\n\nTC010 - Validar estrutura de resposta JSON\n\nObjetivo: Garantir que a API de usuários retorna a estrutura de JSON correta ao criar um usuário.\n\n- Status code esperado: 201\n    \n- Corpo: Deve conter _id, nome, email, password, administrador (dependendo da resposta da API)\n    \n\nTempo de resposta: < 2s\n\n---\n\nTC023 – Enviar requisição com JSON malformado  \nObjetivo: Garantir que a API não aceita requisições com JSON malformado, evitando dados inválidos.  \nStatus code esperado: 400 (ou 422, dependendo da implementação)  \nCorpo: Deve retornar mensagem de erro indicando JSON inválido, por exemplo \"JSON inválido\"  \nTempo de resposta: < 2s\n\n---\n\nTC024 – Enviar requisição com Content-Type incorreto  \nObjetivo: Validar que a API não permite processar requisições com Content-Type incorreto, conforme regra de negócio da US001.  \nStatus code esperado: 415 (ou 400, dependendo da implementação)  \nMensagem de erro esperada: \"Content-Type inválido\" (ou mensagem equivalente retornada pela API)\n\n---\n\nTC025 – Validar códigos de erro HTTP  \nObjetivo: Garantir que a API retorna os códigos de erro HTTP corretos de acordo com as regras de negócio e cenários inválidos.  \nStatus code esperado: 400, 401, 404, 415 ou outros, dependendo do tipo de requisição inválida.  \nMensagem de erro esperada: Deverá corresponder à situação específica do erro (ex.: \"Nenhum registro encontrado\", \"Este email já está sendo usado\", \"Content-Type inválido\").  \nTempo de resposta: < 2s"
+				}
+			]
+		},
+		{
+			"name": "Login",
+			"item": [
+				{
+					"name": "Logar",
+					"item": [
+						{
+							"name": "TC026 – Login com credenciais válidas",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test(\"JSON válido\", function () {",
+											"    pm.response.to.have.jsonBody();",
+											"});",
+											"",
+											"const json = pm.response.json();",
+											"pm.test(\"Token presente\", function () {",
+											"    pm.expect(json).to.have.property(\"authorization\");",
+											"    pm.expect(json.authorization).to.include(\"Bearer\");",
+											"});",
+											"",
+											"pm.test(\"Mensagem de sucesso presente\", function () {",
+											"    pm.expect(json.message).to.eql(\"Login realizado com sucesso\");",
+											"});",
+											"",
+											"pm.test(\"Tempo de resposta aceitável\", function () {",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);",
+											"});",
+											"",
+											"const responseJson = pm.response.json();",
+											"if (responseJson.authorization) {",
+											"    pm.environment.set(\"token\", responseJson.authorization); ",
+											"    console.log(\"Token salvo com sucesso!\");",
+											"} else {",
+											"    console.log(\"Token não encontrado na resposta.\");",
+											"}"
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"login_email\", \"qa+1756853576518@example.com\");\r",
+											"pm.environment.set(\"login_password\", \"abcde\");\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"email\": \"{{login_email}}\",\n  \"password\": \"{{login_password}}\"\n}\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC029 – Login com usuário administrador",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const json = pm.response.json();\r",
+											"\r",
+											"if (json.authorization) {\r",
+											"    pm.environment.set(\"admin_token\", json.authorization);\r",
+											"\r",
+											"    const tokenOnly = json.authorization.split(' ')[1];\r",
+											"    pm.environment.set(\"token\", tokenOnly);\r",
+											"\r",
+											"    console.log(\"Tokens salvos:\");\r",
+											"    console.log(\"admin_token:\", pm.environment.get(\"admin_token\"));\r",
+											"    console.log(\"token_only (apenas JWT):\", pm.environment.get(\"token\"));\r",
+											"}\r",
+											"\r",
+											"pm.test(\"Status code é 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Token presente e formato Bearer JWT\", function () {\r",
+											"    pm.expect(json).to.have.property(\"authorization\");\r",
+											"    pm.expect(json.authorization).to.include(\"Bearer \");\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"{{admin_email}}\",\r\n  \"password\": \"{{admin_password}}\"\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC030 – Login com email inexistente",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"usuario_inexistente@example.com\",\r\n  \"password\": \"abcde\"\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC031 – Login com senha incorreta",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"{{admin_email}}\",\r\n  \"password\": \"senha_incorreta\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC032 – Login com email em branco",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"\",\r\n  \"password\": \"abcde\"\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC033: Login com password em branco",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n   \"email\": \"{{admin_email}}\",\r\n  \"password\": \"\"\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC034 – Login sem body na requisição",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n   \"email\": \"{{admin_email}}\",\r\n  \"password\": \"\"\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC035 – Login com JSON malformado",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    email: \"teste@example.com\",\r\n    password: \"abcde\"\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC036 – Login com credenciais inválidas",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"\r",
+											"pm.test(\"Status code é 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"if (pm.response.headers.get(\"Content-Type\")?.includes(\"application/json\")) {\r",
+											"    const json = pm.response.json();\r",
+											"    pm.test(\"Mensagem de erro presente\", function () {\r",
+											"        pm.expect(json.message).to.eql(\"Email e/ou senha inválidos\");\r",
+											"    });\r",
+											"} else {\r",
+											"    console.log(\"Resposta não é JSON:\", pm.response.text());\r",
+											"}\r",
+											"\r",
+											"pm.test(\"Tempo de resposta aceitável\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\": \"usuario_invalido@example.com\",\r\n    \"password\": \"senha_errada\"\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "TC026 – Login com credenciais válidas  \nObjetivo: Validar que a API permite autenticar usuários cadastrados com credenciais corretas, conforme regra de negócio da US002.  \nStatus code esperado: 200  \nMensagem de sucesso esperada: Retorno de token Bearer válido e dados do usuário autenticado.  \nTempo de resposta esperado: < 2s\n\n---\n\nTC029 – Login com usuário administrador  \nObjetivo: Validar que a API permite autenticação de usuários com perfil administrador, conforme regra de negócio da US002.  \nStatus code esperado: 200  \nMensagem de sucesso esperada: \"Login realizado com sucesso\"  \nCorpo esperado: Deve retornar authorization (Bearer JWT) e user com dados do usuário (nome, email, administrador)\n\n---\n\nTC030 – Login com email inexistente\n\nObjetivo:  \nValidar que a API não permite login de um usuário com email inexistente, conforme regra de negócio da US002.\n\nStatus code esperado:  \n400 (ou 401, dependendo da implementação)\n\nMensagem de erro esperada:  \n\"Email e/ou senha inválidos\" (ou mensagem equivalente retornada pela API)\n\n---\n\nTC031 – Login com senha incorreta\n\nObjetivo:  \nValidar que a API não permite login de um usuário com senha incorreta, conforme regra de negócio da US002.\n\nStatus code esperado:  \n400 (ou 401, dependendo da implementação)\n\nMensagem de erro esperada:  \n\"Email e/ou senha inválidos\" (ou mensagem equivalente retornada pela API)\n\n---\n\nTC032 – Login com email em branco\n\nObjetivo:  \nValidar que a API não permite autenticar usuários quando o campo email é enviado vazio, conforme regra de negócio da US002.\n\nStatus code esperado: 400 (ou 422, dependendo da implementação)  \nMensagem de erro esperada: \"Email é obrigatório\" (ou mensagem equivalente retornada pela API)\n\n---\n\nC033 – Login com pssword em branco\n\nObjetivo:  \nValidar que a API não permite autenticar usuários quando o campo password é enviado vazio, conforme regra de negócio da US002.\n\nStatus code esperado: 400 (ou 422, dependendo da implementação)  \nMensagem de erro esperada: \"Email é obrigatório\" (ou mensagem equivalente retornada pela API)\n\n---\n\nTC034 – Login sem body na requisição  \nObjetivo: Validar que a API não permite processar requisições de login sem enviar o corpo (body), conforme regra de negócio da US002.  \nStatus code esperado: 400 (ou 422, dependendo da implementação)  \nMensagem de erro esperada: \"Body é obrigatório\" (ou mensagem equivalente retornada pela API)  \nTempo de resposta: < 2s\n\n---\n\nTC035 – Login com JSON malformado  \nObjetivo: Validar que a API não aceita requisições de login com JSON malformado, evitando dados inválidos, conforme regra de negócio da US002.\n\nStatus code esperado: 400 (ou 422, dependendo da implementação)  \nMensagem de erro esperada: \"JSON inválido\" (ou mensagem equivalente retornada pela API)  \nTempo de resposta: < 2s\n\n---\n\nTC036 – Login com credenciais inválidas  \nObjetivo: Validar que a API não permite autenticar usuários com credenciais inválidas, conforme regra de negócio da US002.\n\nStatus code esperado: 401 (Unauthorized)  \nMensagem de erro esperada: \"Email e/ou senha inválidos\" (ou mensagem equivalente retornada pela API)  \nTempo de resposta: < 2s"
+				},
+				{
+					"name": "Validar",
+					"item": [
+						{
+							"name": "TC027 – Validar estrutura do token retornado",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"const json = pm.response.json();\r",
+											"pm.test(\"Token presente e formato Bearer JWT\", function () {\r",
+											"    pm.expect(json).to.have.property(\"authorization\");\r",
+											"    pm.expect(json.authorization).to.match(/^Bearer\\s[\\w-]+\\.[\\w-]+\\.[\\w-]+$/);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de sucesso presente\", function () {\r",
+											"    pm.expect(json.message).to.eql(\"Login realizado com sucesso\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta aceitável\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"qa+1756853576518@example.com\",\r\n  \"password\": \"abcde\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC028: Validar tempo de expiração do token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"qa+1756853576518@example.com\",\r\n  \"password\": \"abcde\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC037 – Validar estrutura de erro na resposta",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"if (pm.response.headers.get(\"Content-Type\")?.includes(\"application/json\")) {\r",
+											"    const json = pm.response.json();\r",
+											"    pm.test(\"Estrutura de erro correta\", function () {\r",
+											"        pm.expect(json).to.have.property(\"message\");\r",
+											"        pm.expect(json.message).to.be.a(\"string\");\r",
+											"    });\r",
+											"} else {\r",
+											"    console.log(\"Resposta não é JSON:\", pm.response.text());\r",
+											"}\r",
+											"\r",
+											"pm.test(\"Tempo de resposta aceitável\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"email\": \"usuario_invalido@example.com\",\r\n  \"password\": \"senha_errada\"\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/login",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "TC027 – Validar estrutura do token retornado  \nObjetivo: Garantir que a API retorna um token JWT válido ao efetuar login com credenciais corretas, conforme regra de negócio da US002.  \nStatus code esperado: 200  \nCorpo: Deve conter a propriedade authorization no formato Bearer JWT e a mensagem \"Login realizado com sucesso\"  \nTempo de resposta: < 2s\n\n---\n\nTC028 – Validar tempo de expiração do token  \nObjetivo: Garantir que o token JWT retornado pelo login expira corretamente após 10 minutos, conforme regra de negócio da US002.  \nStatus code esperado: 200  \nCorpo: Deve conter a propriedade authorization no formato Bearer JWT e a mensagem \"Login realizado com sucesso\"  \nTempo de resposta: < 2s\n\n---\n\nTC037 – Validar estrutura de erro na resposta  \nObjetivo: Garantir que a API retorna a estrutura correta de JSON ao ocorrer um erro, permitindo tratamento adequado das mensagens de erro, conforme regra de negócio da US002.  \nStatus code esperado: 400 (ou 401/422, dependendo da implementação)  \nCorpo: Deve conter pelo menos um campo message indicando a causa do erro  \nTempo de resposta: < 2s"
+				}
+			]
+		},
+		{
+			"name": "Produtos",
+			"item": [
+				{
+					"name": "Listar produtos",
+					"item": [
+						{
+							"name": "TC038 – Listar produtos sem autenticação",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const json = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Status code é 200\", function () {\r",
+											"    pm.response.to.have.status(200);  \r",
+											"});\r",
+											"\r",
+											"pm.test(\"Retorno é um JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Lista contém produtos\", function () {\r",
+											"    pm.expect(json).to.have.property(\"quantidade\");\r",
+											"    pm.expect(json.quantidade).to.be.a(\"number\");\r",
+											"    pm.expect(json).to.have.property(\"produtos\");\r",
+											"    pm.expect(json.produtos).to.be.an(\"array\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta < 2s\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/produtos",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC040: Listar produtos por query parameters",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const json = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Status code é 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Retorno é um JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Lista contém produtos\", function () {\r",
+											"    pm.expect(json).to.have.property(\"quantidade\");\r",
+											"    pm.expect(json.quantidade).to.be.a(\"number\");\r",
+											"    pm.expect(json.quantidade).to.be.greaterThan(0);\r",
+											"});\r",
+											"\r",
+											"if (pm.request.url.query.has(\"nome\")) {\r",
+											"    const nomeFiltro = pm.request.url.query.toObject().nome.toLowerCase();\r",
+											"    pm.test(\"Todos os produtos contém o nome filtrado\", function () {\r",
+											"        json.produtos.forEach(prod => {\r",
+											"            pm.expect(prod.nome.toLowerCase()).to.include(nomeFiltro);\r",
+											"        });\r",
+											"    });\r",
+											"}\r",
+											"\r",
+											"pm.test(\"Tempo de resposta < 2s\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{base_url}}/produtos",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "TC038 – Listar produtos sem autenticação  \nObjetivo: Garantir que a API permite listar produtos mesmo sem envio de token de autenticação, já que a ação de leitura é pública, respeitando as regras de negócio da US003.  \nStatus code esperado: 200  \nEstrutura esperada: Objeto JSON contendo as chaves quantidade e produtos, onde quantidade é um número inteiro e produtos é um array de objetos com as chaves _id, nome, preco, descricao e quantidade.  \nTempo de resposta: < 2s\n\n---\n\nTC040 – Listar produtos por query parameters  \nObjetivo: Garantir que a API permite listar produtos utilizando filtros via query parameters (por exemplo, nome, preço, descrição e quantidade), retornando apenas os produtos que atendem aos critérios de pesquisa, conforme regras de negócio da US003.  \nStatus code esperado: 200  \nEstrutura esperada: Objeto JSON contendo as chaves quantidade (total de produtos retornados) e produtos (array com os produtos filtrados).  \nTempo de resposta: < 2s"
+				},
+				{
+					"name": "Criar produtos",
+					"item": [
+						{
+							"name": "TC039 – Criar produto com token válido",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"if (pm.response.headers.get(\"Content-Type\").includes(\"application/json\")) {\r",
+											"    const json = pm.response.json();\r",
+											"\r",
+											"    pm.test(\"Tem _id do produto\", function () {\r",
+											"        pm.expect(json._id).to.exist;\r",
+											"        pm.environment.set(\"produto_id\", json._id);\r",
+											"    });\r",
+											"\r",
+											"    pm.test(\"Mensagem de sucesso\", function () {\r",
+											"        pm.expect(json.message).to.eql(\"Cadastro realizado com sucesso\");\r",
+											"    });\r",
+											"}\r",
+											"\r",
+											"pm.test(\"Tempo de resposta aceitável\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									},
+									{
+										"key": "Authorization",
+										"value": "Bearer {{admin_token}}"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"nome\": \"Produto Teste\",\n  \"preco\": \"99\",\n  \"descricao\": \"Produto para teste\",\n  \"quantidade\": \"10\"\n}\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/produtos",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC043 – Criar produto via PUT com ID inexistente",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"const timestamp = Date.now(); \r",
+											"pm.environment.set(\"put_nome\", \"Produto PUT Teste \" + timestamp);\r",
+											"pm.environment.set(\"put_preco\", 200);\r",
+											"pm.environment.set(\"put_descricao\", \"Produto criado via PUT com ID inexistente\");\r",
+											"pm.environment.set(\"put_quantidade\", 7);\r",
+											"\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const json = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Status code é 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Retorno é JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de sucesso\", function () {\r",
+											"    pm.expect(json.message).to.eql(\"Cadastro realizado com sucesso\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta < 2s\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"{{put_nome}}\",\r\n  \"preco\": {{put_preco}},\r\n  \"descricao\": \"{{put_descricao}}\",\r\n  \"quantidade\": {{put_quantidade}}\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/produtos/{{nonexistent_product_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos",
+										"{{nonexistent_product_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC046: Criar produto sem token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 401\", function () {\r",
+											"    pm.response.to.have.status(401);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Retorno é JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de erro correta\", function () {\r",
+											"    const json = pm.response.json();\r",
+											"    pm.expect(json).to.have.property(\"message\");\r",
+											"    pm.expect(json.message.toLowerCase()).to.include(\"autenticação\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta < 2s\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nome\": \"Produto Sem Token\",\r\n    \"preco\": 100,\r\n    \"descricao\": \"Produto teste sem autenticação\",\r\n    \"quantidade\": 5\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/produtos",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC047: Criar produto com token expirado",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nome\": \"Produto Token Expirado\",\r\n    \"preco\": 120,\r\n    \"descricao\": \"Produto teste com token expirado\",\r\n    \"quantidade\": 3\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/produtos",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC048 – Criar produto com token inválido",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{invalid_token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nome\": \"Produto Inválido Teste\",\r\n    \"preco\": 100,\r\n    \"descricao\": \"Tentativa de criar produto com token inválido\",\r\n    \"quantidade\": 5\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/produtos",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC049 – Criar produto com nome duplicado",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"dup_nome\", \"Produto Teste\"); \r",
+											"pm.environment.set(\"dup_preco\", 99);\r",
+											"pm.environment.set(\"dup_descricao\", \"Descrição do produto duplicado\");\r",
+											"pm.environment.set(\"dup_quantidade\", 10);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const json = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Status code é 400\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Retorno é JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de erro por nome duplicado\", function () {\r",
+											"    pm.expect(json).to.have.property(\"message\");\r",
+											"    pm.expect(json.message).to.eql(\"Já existe produto com esse nome\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta < 2s\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nome\": \"{{dup_nome}}\",\r\n    \"preco\": {{dup_preco}},\r\n    \"descricao\": \"{{dup_descricao}}\",\r\n    \"quantidade\": {{dup_quantidade}}\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/produtos",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC054: Criar produto sem campo nome",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Retorno é JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de erro correta\", function () {\r",
+											"    var json = pm.response.json();\r",
+											"    pm.expect(json).to.have.property(\"nome\");\r",
+											"    pm.expect(json.nome.toLowerCase()).to.include(\"obrigatório\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta < 2s\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"preco\": 100,\r\n  \"descricao\": \"Produto sem nome\",\r\n  \"quantidade\": 5\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/produtos",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC055 – Criar produto sem campo preço",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Retorno é JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de erro correta\", function () {\r",
+											"    var json = pm.response.json();\r",
+											"    pm.expect(json).to.have.property(\"preco\");\r",
+											"    pm.expect(json.preco.toLowerCase()).to.include(\"obrigatório\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta < 2s\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Produto Sem Preco\",\r\n  \"descricao\": \"Produto de teste sem preço\",\r\n  \"quantidade\": 10\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/produtos",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC056: Criar produto com preço inválido",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 400\", function () {\r",
+											"    pm.response.to.have.status(400);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Retorno é JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de erro correta\", function () {\r",
+											"    var json = pm.response.json();\r",
+											"    pm.expect(json).to.have.property(\"preco\");\r",
+											"    pm.expect(json.preco.toLowerCase()).to.include(\"deve ser um número\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta < 2s\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "ty",
+										"value": "js",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Produto Preco Inválido\",\r\n  \"preco\": \"abc\",\r\n  \"descricao\": \"Produto com preço inválido\",\r\n  \"quantidade\": 5\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/produtos",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "TC039 – Criar produto com token válido  \nObjetivo: Garantir que a API permite cadastrar um produto corretamente quando o usuário está autenticado com token válido, conforme regras de negócio da US003.  \nStatus code esperado: 201  \nMensagem de sucesso esperada: \"Cadastro realizado com sucesso\"  \nTempo de resposta: < 2s\n\n---\n\nTC043 – Criar produto via PUT com ID inexistente\n\nObjetivo: Garantir que a API cria um novo produto corretamente quando é feita uma requisição PUT usando um ID que não existe, respeitando as regras de negócio da US003.\n\nStatus code esperado: 201\n\nMensagem de sucesso esperada: \"Cadastro realizado com sucesso\"\n\nEstrutura esperada: Objeto JSON contendo _id, nome, preco, descricao e quantidade do produto criado.\n\nTempo de resposta: < 2s\n\n---\n\nTC046 – Criar produto sem token  \nObjetivo: Garantir que a API não permite cadastrar produtos quando o usuário não envia token de autenticação, respeitando as regras de negócio da US003.  \nStatus code esperado: 401  \nMensagem esperada: \"Token não fornecido\" ou \"Autenticação necessária\"  \nEstrutura esperada: Objeto JSON contendo a chave message com a descrição do erro.  \nTempo de resposta: < 2s\n\n---\n\nTC047 – Criar produto com token expirado  \nObjetivo: Garantir que a API não permite cadastrar produtos quando a requisição é feita com um token expirado, respeitando as regras de negócio da US003.  \nStatus code esperado: 401  \nMensagem esperada: \"Token expirado\" ou \"Autenticação inválida\"  \nEstrutura esperada: Objeto JSON contendo a chave message com a descrição do erro.  \nTempo de resposta: < 2s\n\n---\n\nTC048 – Criar produto com token inválido  \nObjetivo: Garantir que a API não permite cadastrar produtos quando a requisição é feita com um token inválido (corrompido ou alterado), respeitando as regras de negócio da US003.  \nStatus code esperado: 401  \nMensagem esperada: \"Token inválido\" ou \"Autenticação inválida\"  \nEstrutura esperada: Objeto JSON contendo a chave message com a descrição do erro.  \nTempo de resposta: < 2s\n\n---\n\nTC049 – Criar produto com nome duplicado  \nObjetivo: Garantir que a API não permite cadastrar produtos com nomes já existentes no sistema, respeitando as regras de negócio da US003.  \nStatus code esperado: 400  \nMensagem esperada: \"Já existe produto com esse nome\"  \nEstrutura esperada: Objeto JSON contendo a chave message com a descrição do erro.  \nTempo de resposta: < 2s\n\n---\n\nTC054 – Criar produto sem campo nome  \nObjetivo: Validar que a API não permita criar um produto sem informar o campo nome.  \nStatus code esperado: 400  \nMensagem de erro esperada: \"nome é obrigatório\" (ou mensagem equivalente retornada pela API)  \nCorpo: JSON válido  \nTempo de resposta: < 2s\n\n---\n\nTC055 – Criar produto sem campo preço  \nObjetivo: Validar que a API não permita criar um produto sem informar o campo preço.  \nStatus code esperado: 400 ou 422 (dependendo da implementação)  \nMensagem de erro esperada: \"preço é obrigatório\" (ou mensagem equivalente retornada pela API)  \nCorpo: JSON válido  \nTempo de resposta: < 2s\n\n---\n\nTC056 – Criar produto com preço inválido  \nObjetivo: Validar que a API não permita criar um produto com valor de preço inválido (ex.: texto no lugar de número, número negativo ou zero, conforme regra de negócio).  \nStatus code esperado: 400  \nMensagem de erro esperada: \"preço inválido\" (ou mensagem equivalente retornada pela API)  \nCorpo: JSON válido  \nTempo de resposta: < 2s"
+				},
+				{
+					"name": "Buscar produtos",
+					"item": [
+						{
+							"name": "TC041 – Buscar produto por ID válido",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const json = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Status code é 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Retorno é um JSON válido\", function () {\r",
+											"    pm.expect(json).to.be.an(\"object\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Produto contém todas as propriedades esperadas\", function () {\r",
+											"    pm.expect(json).to.have.property(\"_id\");\r",
+											"    pm.expect(json).to.have.property(\"nome\");\r",
+											"    pm.expect(json).to.have.property(\"preco\");\r",
+											"    pm.expect(json).to.have.property(\"descricao\");\r",
+											"    pm.expect(json).to.have.property(\"quantidade\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta < 2s\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/produtos/{{produto_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos",
+										"{{produto_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC051 – Buscar produto com ID inexistente",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"produto_id\", \"IDINEXISTENTE123\");\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const json = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Status code é 404\", function () {\r",
+											"    pm.response.to.have.status(404);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Retorno é JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de erro correta\", function () {\r",
+											"    pm.expect(json).to.have.property(\"message\");\r",
+											"    pm.expect(json.message).to.eql(\"Produto não encontrado\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta < 2s\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/produtos/{{produto_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos",
+										"{{produto_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "TC041 – Buscar produto por ID válido  \nObjetivo: Garantir que a API retorna corretamente os dados de um produto específico quando é feita uma requisição usando um ID válido, respeitando as regras de negócio da US003.  \nStatus code esperado: 200  \nEstrutura esperada: Objeto JSON contendo as chaves _id, nome, preco, descricao e quantidade, com valores correspondentes ao produto buscado.  \nTempo de resposta: < 2s\n\n---\n\nTC051 – Buscar produto com ID inexistente  \nObjetivo: Garantir que a API retorna erro apropriado quando se tenta buscar um produto usando um ID que não existe, respeitando as regras de negócio da US003.  \nStatus code esperado: 404  \nMensagem esperada: \"Produto não encontrado\"  \nEstrutura esperada: Objeto JSON contendo a chave message com a descrição do erro.  \nTempo de resposta: < 2s"
+				},
+				{
+					"name": "Deletar produtos",
+					"item": [
+						{
+							"name": "TC044 – Deletar produto sem dependências",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"delete_produto_id\", \"ID_DO_PRODUTO_SEM_DEPENDENCIAS\");\r",
+											"\r",
+											"const token = pm.environment.get(\"token\");\r",
+											"if (!token) {\r",
+											"    console.error(\"Token não definido!\");\r",
+											"}\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const json = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Status code é 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Retorno é JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de sucesso\", function () {\r",
+											"    pm.expect([\"Produto deletado com sucesso\", \"Nenhum registro excluído\"]).to.include(json.message);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta < 2s\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/produtos/{{produto_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos",
+										"{{produto_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC053 – Deletar produto em carrinho",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/produtos/{{produto_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos",
+										"{{produto_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "TC044 – Deletar produto sem dependências\n\nObjetivo: Garantir que a API permite excluir um produto corretamente quando ele não possui dependências (não está em carrinhos ou ordens), respeitando as regras de negócio da US003.\n\nMétodo: DELETE\n\nEndpoint: {{base_url}}/produtos/{{produto_id}}\n\nToken: Necessário (usuário autenticado)\n\nStatus code esperado: 200\n\nMensagem de sucesso esperada: \"Produto deletado com sucesso\"\n\nEstrutura esperada: Objeto JSON contendo { message: \"Produto deletado com sucesso\" }"
+				},
+				{
+					"name": "Validar",
+					"item": [
+						{
+							"name": "TC045 – Validar estrutura de resposta de produto",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Retorno é JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Estrutura de produto está correta\", function () {\r",
+											"    const json = pm.response.json();\r",
+											"    pm.expect(json).to.have.property(\"_id\");\r",
+											"    pm.expect(json).to.have.property(\"nome\");\r",
+											"    pm.expect(json).to.have.property(\"preco\");\r",
+											"    pm.expect(json).to.have.property(\"descricao\");\r",
+											"    pm.expect(json).to.have.property(\"quantidade\");\r",
+											"    \r",
+											"    pm.expect(json._id).to.be.a(\"string\").with.lengthOf(16);\r",
+											"    pm.expect(json.nome).to.be.a(\"string\");\r",
+											"    pm.expect(json.preco).to.be.a(\"number\");\r",
+											"    pm.expect(json.descricao).to.be.a(\"string\");\r",
+											"    pm.expect(json.quantidade).to.be.a(\"number\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta < 2s\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/produtos/{{produto_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos",
+										"{{produto_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC057 – Validar códigos de erro HTTP",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Produto Sem Token\",\r\n  \"preco\": 100,\r\n  \"descricao\": \"Teste sem token\",\r\n  \"quantidade\": 5\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/produtos",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "TC045 – Validar estrutura de resposta de produto  \nObjetivo: Garantir que a API retorna corretamente a estrutura de um produto, obedecendo ao modelo esperado, conforme regras de negócio da US003.  \nStatus code esperado: 200  \nEstrutura esperada: Objeto JSON contendo as chaves _id, nome, preco, descricao e quantidade, com valores correspondentes ao produto consultado.  \nTempo de resposta: < 2s\n\n---\n\nTC057 – Validar códigos de erro HTTP  \nObjetivo: Garantir que a API retorne os códigos de status HTTP corretos para cada tipo de requisição inválida, conforme especificação.  \nStatus code esperado: 401  \nMensagem de erro esperada: \"Token de acesso ausente, inválido, expirado ou usuário do token não existe mais\"  \nCorpo: JSON válido com detalhes do erro (código, mensagem, timestamp se aplicável).  \nTempo de resposta: < 2s"
+				},
+				{
+					"name": "Atualizar",
+					"item": [
+						{
+							"name": "TC042: Atualizar produto existente",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"pm.environment.set(\"updated_nome\", \"Produto Único Teste \" + Date.now());\r",
+											"pm.environment.set(\"updated_preco\", 150);\r",
+											"pm.environment.set(\"updated_descricao\", \"Descrição atualizada do produto\");\r",
+											"pm.environment.set(\"updated_quantidade\", 5);\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Retorno é JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Mensagem de sucesso\", function () {\r",
+											"    const json = pm.response.json();\r",
+											"    pm.expect(json.message).to.eql(\"Registro alterado com sucesso\");\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Campos do produto atualizados\", function () {\r",
+											"    const json = pm.response.json();\r",
+											"    pm.expect(json.nome).to.eql(pm.environment.get(\"updated_nome\"));\r",
+											"    pm.expect(json.preco).to.eql(pm.environment.get(\"updated_preco\"));\r",
+											"    pm.expect(json.descricao).to.eql(pm.environment.get(\"updated_descricao\"));\r",
+											"    pm.expect(json.quantidade).to.eql(pm.environment.get(\"updated_quantidade\"));\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta < 2s\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									},
+									{
+										"key": "",
+										"value": "",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"nome\": \"{{updated_nome}}\",\r\n    \"preco\": {{updated_preco}},\r\n    \"descricao\": \"{{updated_descricao}}\",\r\n    \"quantidade\": {{updated_quantidade}}\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/produtos/{{product_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos",
+										"{{product_id}}"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC050 – Atualizar produto com nome já usado",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"nome\": \"Produto Teste\", \r\n  \"preco\": 150, \r\n  \"descricao\": \"Descrição atualizada do produto\", \r\n  \"quantidade\": 5\r\n}\r\n"
+								},
+								"url": {
+									"raw": "{{base_url}}/produtos/{{produto_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"produtos",
+										"{{produto_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "TC042 – Atualizar produto existente  \nObjetivo: Garantir que a API permite atualizar corretamente os dados de um produto já existente quando é feita uma requisição com um ID válido e token de autenticação válido, respeitando as regras de negócio da US003.  \nStatus code esperado: 200  \nMensagem de sucesso esperada: \"Registro alterado com sucesso\"  \nTempo de resposta: < 2s  \nObservações:\n\nDeve ser validado que os novos valores de nome, preco, descricao e quantidade foram realmente atualizados no produto.\n\nCaso o ID seja inválido, a API deverá criar um novo produto (conforme Acceptance Criteria).\n\n---\n\nTC050 – Atualizar produto com nome já usado  \nObjetivo: Garantir que a API não permite atualizar um produto para um nome que já existe no banco, respeitando as regras de negócio da US003.  \nStatus code esperado: 400  \nMensagem esperada: \"Já existe produto com esse nome\"  \nEstrutura esperada: Objeto JSON contendo a chave message com a descrição do erro.  \nTempo de resposta: < 2s"
+				}
+			]
+		},
+		{
+			"name": "Carrinhos",
+			"item": [
+				{
+					"name": "Criar carrinho",
+					"item": [
+						{
+							"name": "TC059 – Criar carrinho",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"const json = pm.response.json();\r",
+											"\r",
+											"pm.test(\"Status code é 201\", function () {\r",
+											"    pm.response.to.have.status(201);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Retorno é JSON válido\", function () {\r",
+											"    pm.response.to.be.json;\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Carrinho criado com sucesso\", function () {\r",
+											"    pm.expect(json).to.have.property(\"_id\");\r",
+											"    pm.environment.set(\"carrinho_id\", json._id); \r",
+											"\r",
+											"    if (json.hasOwnProperty(\"produtos\")) {\r",
+											"        pm.expect(json.produtos).to.be.an(\"array\").that.is.not.empty;\r",
+											"    }\r",
+											"});\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"produtos\": [\r\n    { \"idProduto\": \"OFFEdKO1HVtjbYPS\",\r\n    \"quantidade\": 1 \r\n    }\r\n  ]\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/carrinhos",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"carrinhos"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "TC059 – Criar carrinho  \nObjetivo: Validar que seja possível criar um novo carrinho com produtos válidos.  \nStatus code esperado: 201  \nMensagem esperada: \"Cadastro realizado com sucesso\"  \nCorpo: JSON válido contendo _id do carrinho criado e lista de produtos adicionados.  \nTempo de resposta: < 2s"
+				},
+				{
+					"name": "Deletar carrinho",
+					"item": [
+						{
+							"name": "TC061 – Excluir carrinho",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/carrinhos/concluir-compra",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"carrinhos",
+										"concluir-compra"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "TC062 – Excluir carrinho e retornar produtos ao estoque",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"url": {
+									"raw": "{{base_url}}/carrinhos/cancelar-compra",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"carrinhos",
+										"cancelar-compra"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "TC061 – Excluir carrinho  \nObjetivo: Validar que seja possível excluir um carrinho existente.  \nStatus code esperado: 200  \nMensagem esperada: \"Carrinho excluído com sucesso\" (ou equivalente)  \nCorpo: JSON válido contendo _id do carrinho excluído  \nTempo de resposta: < 2s\n\n---\n\nTC062 – Excluir carrinho e retornar produtos ao estoque  \nObjetivo: Validar que ao excluir um carrinho, os produtos contidos nele sejam retornados corretamente ao estoque.  \nStatus code esperado: 200  \nMensagem esperada: \"Carrinho excluído e produtos retornados ao estoque\" (ou equivalente)  \nCorpo: JSON válido contendo _id do carrinho excluído e atualização do estoque dos produtos  \nTempo de resposta: < 2s"
+				},
+				{
+					"name": "Buscar carrinho",
+					"item": [
+						{
+							"name": "TC060 – Buscar carrinho por ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{base_url}}/carrinhos/{{carrinho_id}}",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"carrinhos",
+										"{{carrinho_id}}"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "TC060 – Buscar carrinho por ID  \nObjetivo: Validar que a API retorne erro ao buscar um carrinho inexistente ou inválido.  \nStatus code esperado: 400 ou 404 (dependendo da implementação)  \nMensagem de erro esperada: \"Nenhum registro encontrado\" (ou mensagem equivalente)  \nCorpo: JSON válido  \nTempo de resposta: < 2s"
+				},
+				{
+					"name": "Listar carrinhos",
+					"item": [
+						{
+							"name": "TC058 – Listar carrinhos cadastrados",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"Status code é 200\", function () {\r",
+											"    pm.response.to.have.status(200);\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Retorno é um JSON válido\", function () {\r",
+											"    pm.response.to.have.jsonBody();\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Lista de carrinhos está correta\", function () {\r",
+											"    var json = pm.response.json();\r",
+											"    pm.expect(json).to.be.an(\"object\");\r",
+											"    pm.expect(json).to.have.property(\"quantidade\");\r",
+											"    pm.expect(json).to.have.property(\"carrinhos\");\r",
+											"    pm.expect(json.carrinhos).to.be.an(\"array\");\r",
+											"\r",
+											"    if (json.carrinhos.length > 0) {\r",
+											"        pm.expect(json.carrinhos[0]).to.have.property(\"_id\");\r",
+											"        pm.expect(json.carrinhos[0]).to.have.property(\"produtos\");\r",
+											"        pm.expect(json.carrinhos[0].produtos).to.be.an(\"array\");\r",
+											"    }\r",
+											"});\r",
+											"\r",
+											"pm.test(\"Tempo de resposta < 2s\", function () {\r",
+											"    pm.expect(pm.response.responseTime).to.be.below(2000);\r",
+											"});\r",
+											"\r",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{base_url}}/carrinhos",
+									"host": [
+										"{{base_url}}"
+									],
+									"path": [
+										"carrinhos"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"description": "TC058 – Listar carrinhos cadastrados  \nObjetivo: Garantir que todos os carrinhos cadastrados sejam retornados corretamente.  \nStatus code esperado: 200  \nMensagem esperada: N/A (resposta deve conter a lista de carrinhos)  \nCorpo: JSON válido contendo um array de carrinhos cadastrados.  \nTempo de resposta: < 2s"
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "base_url",
+			"value": "https://compassuol.serverest.dev"
+		},
+		{
+			"key": "admin_email",
+			"value": "admin@serverest.dev"
+		},
+		{
+			"key": "admin_password",
+			"value": "admin"
+		},
+		{
+			"key": "token",
+			"value": ""
+		},
+		{
+			"key": "user_id",
+			"value": ""
+		},
+		{
+			"key": "product_id",
+			"value": ""
+		},
+		{
+			"key": "userId",
+			"value": ""
+		},
+		{
+			"key": "new_email",
+			"value": ""
+		},
+		{
+			"key": "new_password",
+			"value": ""
+		},
+		{
+			"key": "carrinho_id",
+			"value": "",
+			"description": {
+				"content": "",
+				"type": "text/plain"
+			}
+		},
+		{
+			"key": "EC2Url",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

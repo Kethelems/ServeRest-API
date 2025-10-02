@@ -1,0 +1,48 @@
+# Robot Framework Results
+results/
+*.xml
+*.html
+log.html
+report.html
+output.xml
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+*.tmp
+*.temp
+
+# Logs
+*.log
+
+# Node modules (se usar npm para alguma coisa)
+node_modules/
+
+# Backup files
+*.bak
+*.backup
+
+# Test artifacts
+screenshots/
+*.png
+*.jpg
+*.jpeg
