@@ -185,6 +185,9 @@ TC025 - Senha Limite Caracteres - BUG CONHECIDO
     ${user_id_bug2}=      Extract User ID From Response    ${response_bug2}
     Log    BUG CONFIRMADO: Senha > 10 chars aceita (deveria ser rejeitada)
     
+    # Definir mensagem do bug no relatório
+    Set Test Message    🐛 BUG CONHECIDO: API aceita senhas inválidas (< 5 ou > 10 chars) quando deveria rejeitar com erro 400
+    
     # Cleanup
     Deletar Usuario Via API    ${user_id_bug1}
     Deletar Usuario Via API    ${user_id_bug2}
